@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- This file is part stock_supply_sale module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.action.act_window" id="act_purchase_request">
+            <field name="name">Purchase Requests</field>
+            <field name="res_model">purchase.request</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_purchase_request_tree">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="stock_supply.purchase_request_view_tree"/>
+            <field name="act_window" ref="act_purchase_request"/>
+       </record>
+        <record model="ir.action.act_window.view" id="act_purchase_request_form">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="stock_supply.purchase_request_view_form"/>
+            <field name="act_window" ref="act_purchase_request"/>
+        </record>
+
+        <record model="ir.action.wizard" id="act_create_purchase_request_sale_wizard">
+            <field name="name">Create Purchase Requests from Sales</field>
+            <field name="wiz_name">create.purchase.request.sale.wizard</field>
+        </record>
+        <record model="ir.ui.view" id="create_purchase_request_sale_wizard_start_view_form">
+            <field name="model">create.purchase.request.sale.wizard.start</field>
+            <field name="type">form</field>
+            <field name="name">purchase_request_create_start_form</field>
+        </record>
+
+        <menuitem parent="stock_supply.menu_purchase_request_form" sequence="10"
+            action="act_create_purchase_request_sale_wizard"
+            id="menu_create_purchase_request_sale_wizard"/>
+    </data>
+</tryton>

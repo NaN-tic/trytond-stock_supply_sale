@@ -1,0 +1,63 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,days_for_average:"
+msgid "Days for Average Compute"
+msgstr "Días para calcular la media"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,minimum_days:"
+msgid "Minimum Days"
+msgstr "Mínimo de días"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,quantity_average:"
+msgid "Quantity Average"
+msgstr "Cantidad media"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,warehouse:"
+msgid "Warehouse"
+msgstr "Almacén"
+
+msgctxt "help:create.purchase.request.sale.wizard.start,days_for_average:"
+msgid "Days to compute the average daily sales."
+msgstr "Días para calcular la media diaria de ventas."
+
+msgctxt "help:create.purchase.request.sale.wizard.start,minimum_days:"
+msgid "Minimum days of stock you want."
+msgstr "Mínimo de días para los que quiere stoc."
+
+msgctxt "help:create.purchase.request.sale.wizard.start,quantity_average:"
+msgid "Minimum quantity average of daily sales of product."
+msgstr "Media de cantidad mínima de ventas diarias de producto."
+
+msgctxt "model:create.purchase.request.sale.wizard.start,name:"
+msgid "Create Purchase Request Sale Wizard Start"
+msgstr "Inicio asistente crear solicitudes de compra desde ventas"
+
+msgctxt "model:ir.action,name:act_create_purchase_request_sale_wizard"
+msgid "Create Purchase Requests from Sales"
+msgstr "Crear solicitudes de compra desde ventas"
+
+msgctxt "model:ir.action,name:act_purchase_request"
+msgid "Purchase Requests"
+msgstr "Solicitudes de compra"
+
+msgctxt "model:ir.ui.menu,name:menu_create_purchase_request_sale_wizard"
+msgid "Create Purchase Requests from Sales"
+msgstr "Crear solicitudes de compra desde ventas"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Create Purchase Requests from Sales"
+msgstr "Crear solicitudes de compra desde ventas"
+
+msgctxt "wizard_button:create.purchase.request.sale.wizard,start,end:"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "wizard_button:create.purchase.request.sale.wizard,start,request:"
+msgid "Create"
+msgstr "Crear"
