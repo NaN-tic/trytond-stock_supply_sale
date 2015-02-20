@@ -10,7 +10,6 @@ from trytond.pool import Pool, PoolMeta
 from trytond.pyson import PYSONEncoder
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
-import logging
 
 __all__ = ['PurchaseRequest', 'CreatePurchaseRequestSaleWizardStart',
     'CreatePurchaseRequestSaleWizard']
@@ -164,8 +163,6 @@ class PurchaseRequest:
                 request = requests[product]
                 Request.write([request], request_values)
         requests = [requests[r].id for r in requests]
-        logging.getLogger('Stock Supply Sale').info(
-                'Created %s purchase requests from sales.' % (len(requests)))
         return requests
 
 
@@ -228,8 +225,11 @@ class CreatePurchaseRequestSaleWizard(Wizard):
             minimum_days,
             quantity_average,
             )
-        # return all purchase requests (not only new requests)
+        # return all draft purchase requests (not only new requests)
+        action['pyson_domain'] = PYSONEncoder().encode([
+                ('purchase_line', '=', None),
+                ])
         return action, {}
-
+            
     def transition_request(self):
         return 'end'
