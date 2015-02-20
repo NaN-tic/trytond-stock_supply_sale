@@ -10,6 +10,7 @@ from trytond.pool import Pool, PoolMeta
 from trytond.pyson import PYSONEncoder
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
+import logging
 
 __all__ = ['PurchaseRequest', 'CreatePurchaseRequestSaleWizardStart',
     'CreatePurchaseRequestSaleWizard']
@@ -30,53 +31,15 @@ class PurchaseRequest:
         origins.append((model.model, model.name))
         return origins
 
-
-class CreatePurchaseRequestSaleWizardStart(ModelView):
-    'Create Purchase Request Sale Wizard Start'
-    __name__ = 'create.purchase.request.sale.wizard.start'
-    days_for_average = fields.Integer('Days for Average Compute',
-        required=True, help='Days to compute the average daily sales.')
-    minimum_days = fields.Integer('Minimum Days', required=True,
-        help='Minimum days of stock you want.')
-    quantity_average = fields.Float('Quantity Average', digits=(16, 2),
-        required=True,
-        help='Minimum quantity average of daily sales of product.')
-    warehouse = fields.Many2One('stock.location', 'Warehouse',
-        domain=[('type', '=', 'warehouse')], required=True)
-
-    @staticmethod
-    def default_days_for_average():
-        return 30
-
-    @staticmethod
-    def default_minimum_days():
-        return 15
-
-    @staticmethod
-    def default_quantity_average():
-        return 0
-
-    @staticmethod
-    def default_warehouse():
-        Warehouse = Pool().get('stock.location')
-        warehouses = Warehouse.search([
-                ('type', '=', 'warehouse'),
-                ])
-        if len(warehouses) == 1:
-            return warehouses[0].id
-
-
-class CreatePurchaseRequestSaleWizard(Wizard):
-    'Create Purchase Request Sale Wizard'
-    __name__ = 'create.purchase.request.sale.wizard'
-    start = StateView('create.purchase.request.sale.wizard.start',
-        'stock_supply_sale.create_purchase_request_sale_wizard_start_view_form', [
-            Button('Cancel', 'end', 'tryton-cancel'),
-            Button('Create', 'request', 'tryton-ok', default=True),
-            ])
-    request = StateAction('stock_supply_sale.act_purchase_request')
-
-    def create_request(self):
+    @classmethod
+    def create_request_from_sales(cls, warehouse, days_for_average=30,
+            minimum_days=15, quantity_average=0):
+        '''Create requests from sales
+        @param warehouse: obj
+        @param days_for_average: Default 30
+        @param minimum_days: Default 12
+        @param quantity_average: Default 0
+        '''
         pool = Pool()
         Product = pool.get('product.product')
         Request = pool.get('purchase.request')
@@ -89,10 +52,6 @@ class CreatePurchaseRequestSaleWizard(Wizard):
         cursor = transaction.cursor
         context = transaction.context
 
-        days_for_average = self.start.days_for_average or 30
-        minimum_days = self.start.minimum_days
-        quantity_average = self.start.quantity_average
-        warehouse = self.start.warehouse
         start_date = today - timedelta(days_for_average)
         sale = Table('sale_sale')
         sale_line = Table('sale_line')
@@ -205,13 +164,71 @@ class CreatePurchaseRequestSaleWizard(Wizard):
                 request = requests[product]
                 Request.write([request], request_values)
         requests = [requests[r].id for r in requests]
+        logging.getLogger('Stock Supply Sale').info(
+                'Created %s purchase requests from sales.' % (len(requests)))
         return requests
 
-    def do_request(self, action):
-        requests = self.create_request()
-        action['pyson_domain'] = PYSONEncoder().encode([
-                ('id', 'in', requests),
+
+class CreatePurchaseRequestSaleWizardStart(ModelView):
+    'Create Purchase Request Sale Wizard Start'
+    __name__ = 'create.purchase.request.sale.wizard.start'
+    days_for_average = fields.Integer('Days for Average Compute',
+        required=True, help='Days to compute the average daily sales.')
+    minimum_days = fields.Integer('Minimum Days', required=True,
+        help='Minimum days of stock you want.')
+    quantity_average = fields.Float('Quantity Average', digits=(16, 2),
+        required=True,
+        help='Minimum quantity average of daily sales of product.')
+    warehouse = fields.Many2One('stock.location', 'Warehouse',
+        domain=[('type', '=', 'warehouse')], required=True)
+
+    @staticmethod
+    def default_days_for_average():
+        return 30
+
+    @staticmethod
+    def default_minimum_days():
+        return 15
+
+    @staticmethod
+    def default_quantity_average():
+        return 0
+
+    @staticmethod
+    def default_warehouse():
+        Warehouse = Pool().get('stock.location')
+        warehouses = Warehouse.search([
+                ('type', '=', 'warehouse'),
                 ])
+        if len(warehouses) == 1:
+            return warehouses[0].id
+
+
+class CreatePurchaseRequestSaleWizard(Wizard):
+    'Create Purchase Request Sale Wizard'
+    __name__ = 'create.purchase.request.sale.wizard'
+    start = StateView('create.purchase.request.sale.wizard.start',
+        'stock_supply_sale.create_purchase_request_sale_wizard_start_view_form', [
+            Button('Cancel', 'end', 'tryton-cancel'),
+            Button('Create', 'request', 'tryton-ok', default=True),
+            ])
+    request = StateAction('stock_supply_sale.act_purchase_request')
+
+    def do_request(self, action):
+        PurchaseRequest = Pool().get('purchase.request')
+
+        days_for_average = self.start.days_for_average
+        minimum_days = self.start.minimum_days
+        quantity_average = self.start.quantity_average
+        warehouse = self.start.warehouse
+
+        PurchaseRequest.create_request_from_sales(
+            warehouse,
+            days_for_average,
+            minimum_days,
+            quantity_average,
+            )
+        # return all purchase requests (not only new requests)
         return action, {}
 
     def transition_request(self):
