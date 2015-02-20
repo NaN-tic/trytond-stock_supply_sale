@@ -7,7 +7,7 @@ Genera pedidos de compra a partir de las ventas de un determinado periodo.
 Funcionamiento
 ==============
 
-Para acceder al asistente abra el menú Ventas > Productos > Calcular compras.
+Para acceder al asistente abra el menú Compras > Solicitudes de compra > Crear solicitudes de compra desde ventas.
 
 El asistente muestra los siguientes campos:
   * Días para calcular la media: Número de días sobre los que se desea realizar
@@ -26,18 +26,20 @@ resultante de la siguiente operación redondeado al entero superior:
                               Q = M · D - S
 
 Donde:
+
   * Q: es la cantidad de producto que propone comprar,
   * M: es la media de productos vendidos en el periodo indicado,
   * D: es el mínimo de días para los cuales desea tener existencias, y
   * S: son las existencias virtuales en la actualidad.
 
-Para que el asistente cree el pedido de venta de un producto en concreto, éste
+Para que el asistente cree la solicitud de compra de un producto en concreto, éste
 debe tener asignado como mínimo un proveedor en la lista de proveedores
-(pestaña proveedores de la ficha del producto). Si no tiene ningún proveedor
-asignado solamente creará la solicitud de compra.
+(pestaña proveedores de la ficha del producto).
 
 Cuando hay más de un proveedor en la lista de proveedores de un determinado
 producto, el asistente toma el primero de la lista.
 
-Una vez finaliza el cálculo, abre una nueva pestaña con los pedidos de compra
-que ha creado o modificado.
+Una vez finaliza el cálculo, se listaran todas las solicitudes de compra en borrador,
+tanto las que se han generado con el asistente como las solicitudes de compra
+que ya estaban creadas. Ahora es el paso de crear solicitudes de compra a compras
+mediante el asistente.
