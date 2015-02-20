@@ -115,33 +115,6 @@ class PurchaseRequest:
             if quantity <= 0.0:
                 continue
 
-            purchase_line = None
-            if party:
-                if not purchases.get(party, None):
-                    purchase, = Purchase.create([{
-                                'party': party,
-                                'warehouse': warehouse,
-                                }])
-                    purchases[party] = purchase
-                else:
-                    purchase = purchases[party]
-
-                purchase_line_values = {
-                    'purchase': purchase,
-                    'product': product,
-                    'quantity': quantity,
-                    'unit': product.default_uom,
-                    'unit_price': product.cost_price,
-                    'description': product.name,
-                    }
-                if not purchase_lines.get(product, None):
-                    purchase_line, = PurchaseLine.create([
-                            purchase_line_values])
-                    purchase_lines[product] = purchase_line
-                else:
-                    purchase_line = purchase_lines[product]
-                    PurchaseLine.write([purchase_line], purchase_line_values)
-
             request_values = {
                 'product': product,
                 'party': party or None,
@@ -153,7 +126,7 @@ class PurchaseRequest:
                 'warehouse': warehouse,
                 'origin': 'product.product,%s' % product.id,
                 'state': 'draft',
-                'purchase_line': purchase_line,
+                'purchase_line': None,
                 'company': context['company'],
                 }
             if not requests.get(product, None):
