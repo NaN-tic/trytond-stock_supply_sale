@@ -4,7 +4,7 @@
 # the full copyright notices and license terms.
 import unittest
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import test_depends
+from trytond.tests.test_tryton import test_depends, test_view
 
 
 class StockSupplySaleTestCase(unittest.TestCase):
