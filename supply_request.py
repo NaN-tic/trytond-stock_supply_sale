@@ -42,8 +42,6 @@ class PurchaseRequest:
         pool = Pool()
         Product = pool.get('product.product')
         Request = pool.get('purchase.request')
-        Purchase = pool.get('purchase.purchase')
-        PurchaseLine = pool.get('purchase.line')
         Date = pool.get('ir.date')
 
         transaction = Transaction()
@@ -94,14 +92,6 @@ class PurchaseRequest:
                     ('purchase_line.purchase.state', '!=', 'cancel'),
                     ('origin', 'like', 'product.product,%'),
                     ])}
-        purchases = Purchase.search([
-                ('state', '=', 'draft'),
-                ])
-        purchase_lines = {p.product: p for p in PurchaseLine.search([
-                    ('product', 'in', products),
-                    ('purchase', 'in', purchases),
-                    ])}
-        purchases = {p.party: p for p in purchases}
 
         for product in products:
             party = suppliers.get(product, None)
