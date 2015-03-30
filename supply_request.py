@@ -20,14 +20,9 @@ class PurchaseRequest:
     __name__ = 'purchase.request'
 
     @classmethod
-    def get_origin(cls):
-        pool = Pool()
-        IrModel = pool.get('ir.model')
-        origins = super(PurchaseRequest, cls).get_origin()
-        model, = IrModel.search([
-                ('model', '=', 'product.product'),
-                ])
-        origins.append((model.model, model.name))
+    def _get_origin(cls):
+        origins = super(PurchaseRequest, cls)._get_origin()
+        origins.add('product.product')
         return origins
 
     @classmethod
