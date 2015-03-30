@@ -31,14 +31,8 @@ class PurchaseRequest:
         return origins
 
     @classmethod
-    def create_request_from_sales(cls, warehouse, days_for_average=30,
-            minimum_days=15, quantity_average=0):
-        '''Create requests from sales
-        @param warehouse: obj
-        @param days_for_average: Default 30
-        @param minimum_days: Default 12
-        @param quantity_average: Default 0
-        '''
+    def create_request_from_sales(cls, **params):
+        '''Create requests from sales'''
         pool = Pool()
         Product = pool.get('product.product')
         Request = pool.get('purchase.request')
@@ -49,27 +43,61 @@ class PurchaseRequest:
         cursor = transaction.cursor
         context = transaction.context
 
+        warehouse = params['warehouse']
+        days_for_average = params.get('days_for_average', 30)
+        minimum_days = params.get('minimum_days', 15)
+        quantity_average = params.get('quantity_average', 0)
+        sporadic_supplier = params.get('sporadic_supplier', [])
+        suppliers = params.get('suppliers', [])
+        categories = params.get('categories', [])
+        products = params.get('products', [])
+        manufacturers = params.get('manufacturers', [])
+
         start_date = today - timedelta(days_for_average)
         sale = Table('sale_sale')
         sale_line = Table('sale_line')
         product = Table('product_product')
         template = Table('product_template')
+        category = Table('product_category')
+        supplier = Table('purchase_product_supplier')
+        manufacturer = Table('party_party')
         query = sale_line.join(sale,
                 condition=(sale.id == sale_line.sale)
             ).join(product,
                 condition=(sale_line.product == product.id)
             ).join(template,
                 condition=(product.template == template.id)
-            ).select(
+            )
+        where = (
+            (sale.sale_date > start_date) &
+            (sale.sale_date < today) &
+            (sale.state == 'done') &
+            (template.type == 'goods')
+            )
+
+        if suppliers:
+            query = query.join(supplier,
+                condition=template.id == supplier.product)
+            where = where & supplier.party.in_([s.id for s in suppliers])
+
+        if categories:
+            query = query.join(category,
+                condition=template.category == category.id)
+            where = where & category.id.in_([c.id for c in categories])
+
+        if manufacturers:
+            query = query.join(manufacturer,
+                condition=template.manufacturer == manufacturer.id)
+            where = where & manufacturer.id.in_([m.id for m in manufacturers])
+
+        if products:
+            where = where & product.id.in_([p.id for p in products])
+
+        query = query.select(
                 sale_line.product.as_('product'),
                 (Sum(sale_line.quantity) / days_for_average).as_(
                     'average_sold'),
-            where=(
-                (sale.sale_date > start_date) &
-                (sale.sale_date < today) &
-                (sale.state == 'done') &
-                (template.type == 'goods')
-                ),
+            where=where,
             group_by=(
                 sale_line.product
                 ),
@@ -77,22 +105,40 @@ class PurchaseRequest:
                 Sum(sale_line.quantity) / days_for_average > quantity_average
                 )
             )
+
         cursor.execute(*query)
 
         product_average_sold = {p[0]: p[1] for p in cursor.fetchall()}
+        if not product_average_sold:
+            return
         product_ids = [p for p in product_average_sold]
         products = Product.browse(product_ids)
-        suppliers = {p: p.product_suppliers[0].party
-            for p in products if p.product_suppliers}
+
+        if sporadic_supplier:
+            suppliers = {p: sporadic_supplier
+                for p in products}
+        elif not suppliers:
+            suppliers = {p: p.template.product_suppliers[0].party
+                for p in products if p.template.product_suppliers}
+        else:
+            suppl = {}
+            for product in products:
+                suppl[product] = None
+                for supplier in product.template.product_suppliers:
+                    if supplier.party in suppliers:
+                        suppl[product] = supplier.party
+            suppliers = suppl
+
+        requests = Request.search([
+                    ('purchase_line', '=', None),
+                    ('origin', 'like', 'product.product,%'),
+                    ])
+        cls.delete(requests)
 
         with transaction.set_context(locations=warehouse):
             product_quantity = Product.get_quantity(products, 'quantity')
-        requests = {p.product: p for p in Request.search([
-                    ('purchase_line.moves', '=', None),
-                    ('purchase_line.purchase.state', '!=', 'cancel'),
-                    ('origin', 'like', 'product.product,%'),
-                    ])}
 
+        new_requests = []
         for product in products:
             party = suppliers.get(product, None)
             if product.id in product_quantity:
@@ -119,14 +165,9 @@ class PurchaseRequest:
                 'purchase_line': None,
                 'company': context['company'],
                 }
-            if not requests.get(product, None):
-                request, = Request.create([request_values])
-                requests[product] = request
-            else:
-                request = requests[product]
-                Request.write([request], request_values)
-        requests = [requests[r].id for r in requests]
-        return requests
+            new_requests.append(request_values)
+
+        cls.create(new_requests)
 
 
 class CreatePurchaseRequestSaleWizardStart(ModelView):
@@ -141,6 +182,13 @@ class CreatePurchaseRequestSaleWizardStart(ModelView):
         help='Minimum quantity average of daily sales of product.')
     warehouse = fields.Many2One('stock.location', 'Warehouse',
         domain=[('type', '=', 'warehouse')], required=True)
+    sporadic_supplier = fields.Many2One('party.party', 'Sporadic Supplier')
+    suppliers = fields.Many2Many('party.party', None, None,
+        'Suppliers')
+    categories = fields.Many2Many('product.category', None, None, 'Categories')
+    products = fields.Many2Many('product.product', None, None, 'Products')
+    manufacturers = fields.Many2Many('party.party', None, None,
+        'Manufacturers')
 
     @staticmethod
     def default_days_for_average():
@@ -168,7 +216,8 @@ class CreatePurchaseRequestSaleWizard(Wizard):
     'Create Purchase Request Sale Wizard'
     __name__ = 'create.purchase.request.sale.wizard'
     start = StateView('create.purchase.request.sale.wizard.start',
-        'stock_supply_sale.create_purchase_request_sale_wizard_start_view_form', [
+        'stock_supply_sale.'
+        'create_purchase_request_sale_wizard_start_view_form', [
             Button('Cancel', 'end', 'tryton-cancel'),
             Button('Create', 'request', 'tryton-ok', default=True),
             ])
@@ -176,23 +225,24 @@ class CreatePurchaseRequestSaleWizard(Wizard):
 
     def do_request(self, action):
         PurchaseRequest = Pool().get('purchase.request')
+        params = {
+            'days_for_average': self.start.days_for_average,
+            'minimum_days': self.start.minimum_days,
+            'quantity_average': self.start.quantity_average,
+            'warehouse': self.start.warehouse,
+            'sporadic_supplier': self.start.sporadic_supplier,
+            'suppliers': self.start.suppliers,
+            'categories': self.start.categories,
+            'products': self.start.products,
+            'manufacturers': self.start.manufacturers,
+            }
 
-        days_for_average = self.start.days_for_average
-        minimum_days = self.start.minimum_days
-        quantity_average = self.start.quantity_average
-        warehouse = self.start.warehouse
-
-        PurchaseRequest.create_request_from_sales(
-            warehouse,
-            days_for_average,
-            minimum_days,
-            quantity_average,
-            )
+        PurchaseRequest.create_request_from_sales(**params)
         # return all draft purchase requests (not only new requests)
         action['pyson_domain'] = PYSONEncoder().encode([
                 ('purchase_line', '=', None),
                 ])
         return action, {}
-            
+
     def transition_request(self):
         return 'end'

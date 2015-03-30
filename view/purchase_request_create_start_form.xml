@@ -1,13 +1,26 @@
 <?xml version="1.0"?>
 <!-- This file is part stock_lot_quantity_location module for Tryton.
-The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+The COPYRIGHT file at the top level of this repository contains the full
+copyright notices and license terms. -->
 <form string="Create Purchase Requests from Sales" col="2" cursor="warehouse">
-    <label name="days_for_average"/>
-    <field name="days_for_average"/>
-    <label name="minimum_days"/>
-    <field name="minimum_days"/>
-    <label name="quantity_average"/>
-    <field name="quantity_average"/>
-    <label name="warehouse"/>
-    <field name="warehouse"/>
+    <notebook>
+        <page string="General Parameters" id="general" col="2">
+            <label name="days_for_average"/>
+            <field name="days_for_average"/>
+            <label name="minimum_days"/>
+            <field name="minimum_days"/>
+            <label name="quantity_average"/>
+            <field name="quantity_average"/>
+            <label name="warehouse"/>
+            <field name="warehouse"/>
+            <label name="sporadic_supplier"/>
+            <field name="sporadic_supplier"/>
+        </page>
+        <page string="Filters" id="filters" col="2">
+            <field name="suppliers"/>
+            <field name="manufacturers"/>
+            <field name="categories"/>
+            <field name="products"/>
+        </page>
+    </notebook>
 </form>
