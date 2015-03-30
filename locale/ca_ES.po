@@ -2,6 +2,10 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "field:create.purchase.request.sale.wizard.start,categories:"
+msgid "Categories"
+msgstr "Categories"
+
 msgctxt "field:create.purchase.request.sale.wizard.start,days_for_average:"
 msgid "Days for Average Compute"
 msgstr "Dies per calcular la mitja"
@@ -10,13 +14,29 @@ msgctxt "field:create.purchase.request.sale.wizard.start,id:"
 msgid "ID"
 msgstr "ID"
 
+msgctxt "field:create.purchase.request.sale.wizard.start,manufacturers:"
+msgid "Manufacturers"
+msgstr "Fabricants"
+
 msgctxt "field:create.purchase.request.sale.wizard.start,minimum_days:"
 msgid "Minimum Days"
 msgstr "Mínim dies"
 
+msgctxt "field:create.purchase.request.sale.wizard.start,products:"
+msgid "Products"
+msgstr "Productes"
+
 msgctxt "field:create.purchase.request.sale.wizard.start,quantity_average:"
 msgid "Quantity Average"
 msgstr "Quantitat mitjana"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,sporadic_supplier:"
+msgid "Sporadic Supplier"
+msgstr "Proveïdors esporàdics"
+
+msgctxt "field:create.purchase.request.sale.wizard.start,suppliers:"
+msgid "Suppliers"
+msgstr "Proveïdors"
 
 msgctxt "field:create.purchase.request.sale.wizard.start,warehouse:"
 msgid "Warehouse"
@@ -54,9 +74,17 @@ msgctxt "view:create.purchase.request.sale.wizard.start:"
 msgid "Create Purchase Requests from Sales"
 msgstr "Crea sol·licituts de compra des de vendes"
 
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Filters"
+msgstr "Filtres"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "General Parameters"
+msgstr "Paràmetres generals"
+
 msgctxt "wizard_button:create.purchase.request.sale.wizard,start,end:"
 msgid "Cancel"
-msgstr "Cancel·lada"
+msgstr "Cancel·la"
 
 msgctxt "wizard_button:create.purchase.request.sale.wizard,start,request:"
 msgid "Create"
