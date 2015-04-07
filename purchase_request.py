@@ -67,7 +67,8 @@ class PurchaseRequest:
             (sale.sale_date > start_date) &
             (sale.sale_date < today) &
             (sale.state == 'done') &
-            (template.type == 'goods')
+            (template.type == 'goods') &
+            (template.purchasable)
             )
 
         if suppliers:
