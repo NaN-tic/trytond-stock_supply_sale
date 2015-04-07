@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- This file is part stock_lot_quantity_location module for Tryton.
+<!-- This file is part stock_supply_sale module for Tryton.
 The COPYRIGHT file at the top level of this repository contains the full
 copyright notices and license terms. -->
 <form string="Create Purchase Requests from Sales" col="2" cursor="warehouse">
@@ -17,10 +17,20 @@ copyright notices and license terms. -->
             <field name="sporadic_supplier"/>
         </page>
         <page string="Filters" id="filters" col="2">
-            <field name="suppliers"/>
-            <field name="manufacturers"/>
-            <field name="categories"/>
-            <field name="products"/>
+            <notebook>
+                <page string="Suppliers" id="suppliers">
+                    <field name="suppliers"/>
+                </page>
+                <page string="Manufacturers" id="manufacturers">
+                    <field name="manufacturers"/>
+                </page>
+                <page string="Categories" id="categories">
+                    <field name="categories"/>
+                </page>
+                <page string="Products" id="products">
+                    <field name="products"/>
+                </page>
+            </notebook>
         </page>
     </notebook>
 </form>
