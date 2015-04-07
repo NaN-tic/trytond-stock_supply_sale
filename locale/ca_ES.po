@@ -71,6 +71,10 @@ msgid "Create Purchase Requests from Sales"
 msgstr "Crea sol·licituts de compra des de vendes"
 
 msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Categories"
+msgstr "Categories"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
 msgid "Create Purchase Requests from Sales"
 msgstr "Crea sol·licituts de compra des de vendes"
 
@@ -81,6 +85,18 @@ msgstr "Filtres"
 msgctxt "view:create.purchase.request.sale.wizard.start:"
 msgid "General Parameters"
 msgstr "Paràmetres generals"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Manufacturers"
+msgstr "Fabricants"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Products"
+msgstr "Productes"
+
+msgctxt "view:create.purchase.request.sale.wizard.start:"
+msgid "Suppliers"
+msgstr "Proveïdors"
 
 msgctxt "wizard_button:create.purchase.request.sale.wizard,start,end:"
 msgid "Cancel"
