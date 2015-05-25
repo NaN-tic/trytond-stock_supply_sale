@@ -131,7 +131,7 @@ class PurchaseRequest:
                     ])
         cls.delete(requests)
 
-        with transaction.set_context(locations=warehouse):
+        with transaction.set_context({'locations': [warehouse.id]}):
             product_quantity = Product.get_quantity(products, 'quantity')
 
         new_requests = []
