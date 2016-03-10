@@ -35,7 +35,7 @@ class PurchaseRequest:
 
         transaction = Transaction()
         today = Date.today()
-        cursor = transaction.cursor
+        cursor = transaction.connection.cursor
         context = transaction.context
 
         warehouse = params['warehouse']
