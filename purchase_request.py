@@ -13,10 +13,10 @@ from trytond.wizard import Wizard, StateView, StateAction, Button
 
 __all__ = ['PurchaseRequest', 'CreatePurchaseRequestSaleWizardStart',
     'CreatePurchaseRequestSaleWizard']
-__metaclass__ = PoolMeta
 
 
 class PurchaseRequest:
+    __metaclass__ = PoolMeta
     __name__ = 'purchase.request'
 
     @classmethod
@@ -35,7 +35,7 @@ class PurchaseRequest:
 
         transaction = Transaction()
         today = Date.today()
-        cursor = transaction.connection.cursor
+        cursor = transaction.connection.cursor()
         context = transaction.context
 
         warehouse = params['warehouse']
