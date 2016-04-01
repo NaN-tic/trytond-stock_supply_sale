@@ -28,7 +28,7 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <field name="name">purchase_request_create_start_form</field>
         </record>
 
-        <menuitem parent="stock_supply.menu_purchase_request_form" sequence="10"
+        <menuitem parent="purchase_request.menu_purchase_request_form" sequence="10"
             action="act_create_purchase_request_sale_wizard"
             id="menu_create_purchase_request_sale_wizard"/>
     </data>
